@@ -114,17 +114,14 @@ func (d *Durafmt) String() string {
 	}
 
 	// Construct duration string.
-	for i := range units {
-		u := units[i]
-		v := durationMap[u]
+	for i := range unitsShort {
+		u := unitsShort[i]
+		v := durationMap[units[i]]
 		strval := strconv.FormatInt(v, 10)
 		switch {
-		// add to the duration string if v > 1.
-		case v > 1:
-			duration += strval + " " + u + " "
-		// remove the plural 's', if v is 1.
-		case v == 1:
-			duration += strval + " " + strings.TrimRight(u, "s") + " "
+		// add to the duration string if v >= 1.
+		case v >= 1:
+			duration += strval + u + " "
 		// omit any value with 0s or 0.
 		case d.duration.String() == "0" || d.duration.String() == "0s":
 			pattern := fmt.Sprintf("^-?0%s$", unitsShort[i])
@@ -133,7 +130,7 @@ func (d *Durafmt) String() string {
 				return ""
 			}
 			if isMatch {
-				duration += strval + " " + u
+				duration += strval + u
 			}
 
 		// omit any value with 0.
@@ -144,12 +141,12 @@ func (d *Durafmt) String() string {
 	// trim any remaining spaces.
 	duration = strings.TrimSpace(duration)
 
-	// if more than 2 spaces present return the first 2 strings
+	// if more than 1 space present return the first 2 strings
 	// if short version is requested
 	if d.limitN > 0 {
 		parts := strings.Split(duration, " ")
-		if len(parts) > d.limitN*2 {
-			duration = strings.Join(parts[:d.limitN*2], " ")
+		if len(parts) > d.limitN*1 {
+			duration = strings.Join(parts[:d.limitN*1], " ")
 		}
 	}
 
